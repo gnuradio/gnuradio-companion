@@ -42,9 +42,3 @@ usrp_python_PYTHON = \
 	usrp/common.py \
 	usrp/dual_usrp.py \
 	usrp/simple_usrp.py
-
-wxgui_pythondir = $(grc_gnuradio_prefix)/wxgui
-wxgui_python_PYTHON = \
-	wxgui/__init__.py \
-	wxgui/panel.py \
-	wxgui/top_block_gui.py
