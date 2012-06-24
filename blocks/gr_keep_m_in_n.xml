@@ -1,25 +1,19 @@
 <?xml version="1.0"?>
 <!--
 ###################################################
-##File Sink
+##Keep M in N
 ###################################################
  -->
 <block>
-	<name>File Sink</name>
-	<key>gr_file_sink</key>
+	<name>Keep M in N</name>
+	<key>gr_keep_m_in_n</key>
 	<import>from gnuradio import gr</import>
-	<make>gr.file_sink($type.size*$vlen, $file)
-self.$(id).set_unbuffered($unbuffered)</make>
-	<callback>set_unbuffered($unbuffered)</callback>
-	<callback>open($file)</callback>
+	<make>gr.keep_m_in_n($type.size, $m, $n, $offset)</make>
+    <callback>set_offset($offset)</callback>
+    <callback>set_m($m)</callback>
+    <callback>set_n($n)</callback>
 	<param>
-		<name>File</name>
-		<key>file</key>
-		<value></value>
-		<type>file_save</type>
-	</param>
-	<param>
-		<name>Input Type</name>
+		<name>Type</name>
 		<key>type</key>
 		<type>enum</type>
 		<option>
@@ -49,30 +43,34 @@ self.$(id).set_unbuffered($unbuffered)</make>
 		</option>
 	</param>
 	<param>
-		<name>Vec Length</name>
-		<key>vlen</key>
+		<name>M</name>
+		<key>m</key>
 		<value>1</value>
 		<type>int</type>
 	</param>
 	<param>
-		<name>Unbuffered</name>
-		<key>unbuffered</key>
-		<value>False</value>
-		<type>bool</type>
-		<option>
-				<name>Off</name>
-				<key>False</key>
-		</option>
-		<option>
-				<name>On</name>
-				<key>True</key>
-		</option>
+		<name>N</name>
+		<key>n</key>
+		<value>2</value>
+		<type>int</type>
 	</param>
-
-	<check>$vlen &gt; 0</check>
+	<param>
+		<name>initial offset</name>
+		<key>offset</key>
+		<value>0</value>
+		<type>int</type>
+	</param>
+	<check>$n &gt; 0</check>
+	<check>$m &gt; 0</check>
+	<check>$m &lt; $n</check>
 	<sink>
 		<name>in</name>
 		<type>$type</type>
-		<vlen>$vlen</vlen>
+		<vlen>1</vlen>
 	</sink>
+	<source>
+		<name>out</name>
+		<type>$type</type>
+		<vlen>1</vlen>
+	</source>
 </block>

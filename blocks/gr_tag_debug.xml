@@ -1,23 +1,15 @@
 <?xml version="1.0"?>
 <!--
 ###################################################
-##File Sink
+## Tag Debug
 ###################################################
  -->
 <block>
-	<name>File Sink</name>
-	<key>gr_file_sink</key>
+	<name>Tag Debug</name>
+	<key>gr_tag_debug</key>
 	<import>from gnuradio import gr</import>
-	<make>gr.file_sink($type.size*$vlen, $file)
-self.$(id).set_unbuffered($unbuffered)</make>
-	<callback>set_unbuffered($unbuffered)</callback>
-	<callback>open($file)</callback>
-	<param>
-		<name>File</name>
-		<key>file</key>
-		<value></value>
-		<type>file_save</type>
-	</param>
+	<make>gr.tag_debug($type.size*$vlen, $name)</make>
+	<callback>set_display($display)</callback>
 	<param>
 		<name>Input Type</name>
 		<key>type</key>
@@ -49,30 +41,42 @@ self.$(id).set_unbuffered($unbuffered)</make>
 		</option>
 	</param>
 	<param>
+		<name>Name</name>
+		<key>name</key>
+		<type>string</type>
+	</param>
+	<param>
+		<name>Num Inputs</name>
+		<key>num_inputs</key>
+		<value>1</value>
+		<type>int</type>
+	</param>
+	<param>
 		<name>Vec Length</name>
 		<key>vlen</key>
 		<value>1</value>
 		<type>int</type>
 	</param>
 	<param>
-		<name>Unbuffered</name>
-		<key>unbuffered</key>
-		<value>False</value>
+		<name>Display</name>
+		<key>display</key>
+		<value>True</value>
 		<type>bool</type>
 		<option>
-				<name>Off</name>
-				<key>False</key>
+			<name>On</name>
+			<key>True</key>
 		</option>
 		<option>
-				<name>On</name>
-				<key>True</key>
+			<name>Off</name>
+			<key>False</key>
 		</option>
 	</param>
-
+	<check>$num_inputs &gt;= 1</check>
 	<check>$vlen &gt; 0</check>
 	<sink>
 		<name>in</name>
 		<type>$type</type>
 		<vlen>$vlen</vlen>
+		<nports>$num_inputs</nports>
 	</sink>
 </block>
