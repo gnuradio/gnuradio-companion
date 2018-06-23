@@ -1,4 +1,4 @@
-# Copyright 2016 Free Software Foundation, Inc.
+# Copyright 2017 Free Software Foundation, Inc.
 # This file is part of GNU Radio
 #
 # GNU Radio Companion is free software; you can redistribute it and/or
@@ -15,24 +15,4 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-from __future__ import absolute_import
-
-from ._flags import Flags
-from ._templates import MakoTemplates
-
-from .block import Block
-
-from ._build import build
-
-
-build_ins = {}
-
-
-def register_build_in(cls):
-    cls.loaded_from = '(build-in)'
-    build_ins[cls.key] = cls
-    return cls
-
-from .dummy import DummyBlock
-from .embedded_python import EPyBlock, EPyModule
-from .virtual import VirtualSink, VirtualSource
+from .param import Param
