@@ -10,11 +10,14 @@ import argparse
 import gettext
 import locale
 import logging
-import logging.handlers
 import os
 import platform
 import sys
 from pathlib import Path
+
+from .utilities import logger as custom_logging
+
+log = logging.getLogger(__name__)
 
 
 VERSION_AND_DISCLAIMER_TEMPLATE = """\
@@ -82,21 +85,8 @@ except ImportError as ex:
     # raise Exception("Cannot find GNU Radio!") from None
 
 
-# Enable Logging
-# Do this globally so it is available for both run_gtk() and run_qt()
-# TODO: Advanced logging - https://docs.python.org/3/howto/logging-cookbook.html#formatting-styles
-# Note: All other modules need to use the 'grc.<module>' convention
-log = logging.getLogger("grc")
-# Set the root log name
-# Since other files are in the 'grc' module, they automatically get a child logger when using:
-#   log = logging.getLogger(__name__)
-# This log level should be set to DEBUG so the logger itself catches everything.
-# The StreamHandler level can be set independently to choose what messages are sent to the console.
-# The default console logging should be WARNING
-log.setLevel(logging.DEBUG)
 
-
-def run_gtk(args, log):
+def run_gtk(args):
     """Runs the GTK version of GNU Radio Companion"""
 
     import gi
@@ -125,7 +115,7 @@ def run_gtk(args, log):
     sys.exit(app.run())
 
 
-def run_qt(args, log):
+def run_qt(args):
     """Runs the Qt version of GNU Radio Companion"""
 
     import platform
@@ -224,7 +214,7 @@ def get_config_file_path(config_file: str = "grc.conf") -> str:
         if os.path.exists(newpath):
             return newpath
         if os.path.exists(oldpath):
-            log.warn(
+            log.warning(
                 f"Found specification for config path '{newpath}', but file does not exist. "
                 + f"Old default config file path '{oldpath}' exists; using that. "
                 + "Please consider moving configuration to new location."
@@ -237,7 +227,7 @@ def get_config_file_path(config_file: str = "grc.conf") -> str:
         os.makedirs(pathdir, exist_ok=True)
         return newpath
     except ImportError:
-        log.warn(
+        log.warning(
             "Could not retrieve GNU Radio configuration directory from GNU Radio. Trying defaults."
         )
         xdgconf = os.getenv("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
@@ -245,7 +235,7 @@ def get_config_file_path(config_file: str = "grc.conf") -> str:
         if os.path.exists(xdgcand):
             return xdgcand
         if os.path.exists(oldpath):
-            log.warn(
+            log.warning(
                 f"Using legacy config path '{oldpath}'. Please consider moving configuration "
                 + f"files to '{newpath}'."
             )
@@ -266,7 +256,7 @@ def get_state_directory() -> str:
         if os.path.exists(newpath):
             return newpath
         if os.path.exists(oldpath):
-            log.warn(
+            log.warning(
                 f"Found specification for persistent state path '{newpath}', but file does not exist. "
                 + f"Old default persistent state path '{oldpath}' exists; using that. "
                 + "Please consider moving state to new location."
@@ -277,7 +267,7 @@ def get_state_directory() -> str:
         os.makedirs(newpath, exist_ok=True)
         return newpath
     except (ImportError, NameError):
-        log.warn(
+        log.warning(
             "Could not retrieve GNU Radio persistent state directory from GNU Radio. Trying defaults."
         )
         xdgstate = os.getenv("XDG_STATE_HOME", os.path.expanduser("~/.local/state"))
@@ -285,7 +275,7 @@ def get_state_directory() -> str:
         if os.path.exists(xdgcand):
             return xdgcand
         if os.path.exists(oldpath):
-            log.warn(
+            log.warning(
                 f"Using legacy state path '{oldpath}'. Please consider moving state "
                 + f"files to '{newpath}'."
             )
@@ -296,6 +286,9 @@ def get_state_directory() -> str:
 
 
 def main():
+    # TODO: Only for testing!
+    custom_logging.configure_logger(logging.TRACE)
+
     grc_version_from_config = ""
     grc_qt_config_file = get_config_file_path("grc_qt.conf")
     if os.path.isfile(grc_qt_config_file):
@@ -371,14 +364,14 @@ def main():
 
     # GUI Framework
     if args.framework == "qt":
-        run_qt(args, log)
+        run_qt(args)
     elif args.framework == "gtk":
-        run_gtk(args, log)
+        run_gtk(args)
     else:  # args.framework == None
         if grc_version_from_config == "grc_qt":
-            run_qt(args, log)
+            run_qt(args)
         else:
-            run_gtk(args, log)
+            run_gtk(args)
 
 
 if __name__ == "__main__":

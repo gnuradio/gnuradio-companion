@@ -13,6 +13,9 @@ dev = [
     "ruff>=0.13.0",
     "pytest>=8.4.2",
 ]
+optional = [
+    "rich>=14.1.0",
+]
 
 [project.scripts]
 gnuradio-companion = "gnuradio_companion.main:main"
