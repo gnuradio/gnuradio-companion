@@ -153,7 +153,7 @@ class Console(QtWidgets.QDockWidget, base.Component):
         handler.setLevel(self.level)
 
         # Need to add this handler to the parent of the controller's logger
-        log.parent.addHandler(handler)
+        logger.parent.addHandler(handler)
         self.handler = handler
 
         self.actions["show_level"].setChecked = True
@@ -171,7 +171,7 @@ class Console(QtWidgets.QDockWidget, base.Component):
     def createActions(self, actions):
         """Defines all actions for this view."""
 
-        log.debug("Creating actions")
+        logger.debug("Creating actions")
 
         # File Actions
         actions["save"] = Action(
@@ -199,7 +199,7 @@ class Console(QtWidgets.QDockWidget, base.Component):
     def createMenus(self, actions, menus):
         """Setup the view's menus"""
 
-        log.debug("Creating menus")
+        logger.debug("Creating menus")
 
         console_menu = QtWidgets.QMenu("&Console")
         console_menu.setObjectName("console::menu")
@@ -213,7 +213,7 @@ class Console(QtWidgets.QDockWidget, base.Component):
         menus["console"] = console_menu
 
     def createToolbars(self, actions, toolbars):
-        log.debug("Creating toolbars")
+        logger.debug("Creating toolbars")
 
     def add_line(self, line):
         # TODO: Support multiple columns for the HTML. DO better with the spacing
@@ -230,7 +230,7 @@ class Console(QtWidgets.QDockWidget, base.Component):
         self._text.clear()
 
     def save_triggered(self):
-        log.warning("Save reports not implemented")
+        logger.warning("Save reports not implemented")
 
     def show_level_toggled(self, checked):
         self.handler.show_level = checked

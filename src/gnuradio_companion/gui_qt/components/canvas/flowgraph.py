@@ -320,7 +320,7 @@ class FlowgraphScene(QtWidgets.QGraphicsScene, base.Component):
             if isinstance(g_item, GUIPort):
                 c_item = g_item.core
                 if g_item != self.start_port:
-                    log.debug("Created connection (drag)")
+                    logger.debug("Created connection (drag)")
                     new_con = self.core.connect(self.start_port.core, c_item)
                     self.addItem(new_con.gui)
                     self.newElement.emit(new_con)
@@ -332,7 +332,7 @@ class FlowgraphScene(QtWidgets.QGraphicsScene, base.Component):
             if self.clickPos != event.scenePos() and self.moving_blocks:
                 self.itemMoved.emit(event.scenePos() - self.clickPos)
             elif (self.start_port != None) and (self.end_port != None):
-                log.debug("Created connection (click)")
+                logger.debug("Created connection (click)")
                 new_con = self.core.connect(self.start_port.core, self.end_port.core)
                 self.addItem(new_con.gui)
                 self.newElement.emit(new_con)
@@ -343,7 +343,7 @@ class FlowgraphScene(QtWidgets.QGraphicsScene, base.Component):
         super(FlowgraphScene, self).mouseReleaseEvent(event)
 
     def createActions(self, actions):
-        log.debug("Creating actions")
+        logger.debug("Creating actions")
 
         """
         # File Actions
@@ -355,10 +355,10 @@ class FlowgraphScene(QtWidgets.QGraphicsScene, base.Component):
         """
 
     def createMenus(self, actions, menus):
-        log.debug("Creating menus")
+        logger.debug("Creating menus")
 
     def createToolbars(self, actions, toolbars):
-        log.debug("Creating toolbars")
+        logger.debug("Creating toolbars")
 
     def import_data(self, data):
         self.core.import_data(data)
@@ -515,7 +515,7 @@ class FlowgraphScene(QtWidgets.QGraphicsScene, base.Component):
             editor.open_editor()
         except Exception as e:
             # Problem launching the editor. Need to select a new editor.
-            log.error(
+            logger.error(
                 "Error opening an external editor. Please select a different editor.\n"
             )
             # Reset the editor to force the user to select a new one.

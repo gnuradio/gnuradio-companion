@@ -276,7 +276,7 @@ class ExampleBrowser(QWidget, base.Component):
         with Cache(cache_file, log=False) as cache:
             for entry in self.platform.config.example_paths:
                 if entry == "":
-                    log.info("Empty example path!")
+                    logger.info("Empty example path!")
                     continue
                 examples_dict[entry] = []
                 if os.path.isdir(entry):

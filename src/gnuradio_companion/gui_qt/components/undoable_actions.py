@@ -17,7 +17,7 @@ log = logging.getLogger(f"grc.application.{__name__}")
 class ChangeStateAction(QUndoCommand):
     def __init__(self, scene: FlowgraphScene):
         QUndoCommand.__init__(self)
-        log.debug("init ChangeState")
+        logger.debug("init ChangeState")
         self.old_states = []
         self.old_params = []
         self.new_states = []
@@ -46,7 +46,7 @@ class ChangeStateAction(QUndoCommand):
 class RotateAction(QUndoCommand):
     def __init__(self, scene: FlowgraphScene, delta_angle: int):
         QUndoCommand.__init__(self)
-        log.debug("init RotateAction")
+        logger.debug("init RotateAction")
         self.setText("Rotate")
         self.g_blocks = scene.selected_blocks()
         self.scene = scene
@@ -62,7 +62,7 @@ class RotateAction(QUndoCommand):
 class MoveAction(QUndoCommand):
     def __init__(self, scene: FlowgraphScene, diff: QPointF):
         QUndoCommand.__init__(self)
-        log.debug("init MoveAction")
+        logger.debug("init MoveAction")
         self.setText("Move")
         self.g_blocks = scene.selected_blocks()
         self.scene = scene
@@ -92,7 +92,7 @@ class MoveAction(QUndoCommand):
 class EnableAction(ChangeStateAction):
     def __init__(self, scene: FlowgraphScene):
         ChangeStateAction.__init__(self, scene)
-        log.debug("init EnableAction")
+        logger.debug("init EnableAction")
         self.setText("Enable")
         for i in range(len(self.g_blocks)):
             self.new_states[i]["state"] = "enabled"
@@ -101,7 +101,7 @@ class EnableAction(ChangeStateAction):
 class DisableAction(ChangeStateAction):
     def __init__(self, scene: FlowgraphScene):
         ChangeStateAction.__init__(self, scene)
-        log.debug("init DisableAction")
+        logger.debug("init DisableAction")
         self.setText("Disable")
         for i in range(len(self.g_blocks)):
             self.new_states[i]["state"] = "disabled"
@@ -110,7 +110,7 @@ class DisableAction(ChangeStateAction):
 class BypassAction(ChangeStateAction):
     def __init__(self, scene: FlowgraphScene):
         ChangeStateAction.__init__(self, scene)
-        log.debug("init BypassAction")
+        logger.debug("init BypassAction")
         self.setText("Bypass")
         for i in range(len(self.g_blocks)):
             self.new_states[i]["state"] = "bypassed"
@@ -121,7 +121,7 @@ class BypassAction(ChangeStateAction):
 class BlockPropsChangeAction(QUndoCommand):
     def __init__(self, scene: FlowgraphScene, c_block: Block):
         QUndoCommand.__init__(self)
-        log.debug("init BlockPropsChangeAction")
+        logger.debug("init BlockPropsChangeAction")
         self.setText(f"{c_block.name} block: Change properties")
         self.scene = scene
         self.c_block = c_block
@@ -166,7 +166,7 @@ class BussifyAction(QUndoCommand):
         self, scene: FlowgraphScene, direction: str
     ):  # direction is either "sink" or "source"
         QUndoCommand.__init__(self)
-        log.debug("init BussifyAction")
+        logger.debug("init BussifyAction")
         self.setText(f"Toggle bus {direction}")
         self.scene = scene
         self.direction = direction
@@ -188,7 +188,7 @@ class BussifyAction(QUndoCommand):
 class NewElementAction(QUndoCommand):
     def __init__(self, scene: FlowgraphScene, element: Element):
         QUndoCommand.__init__(self)
-        log.debug("init NewElementAction")
+        logger.debug("init NewElementAction")
         self.setText("New")
         self.scene = scene
         self.element = element
@@ -215,7 +215,7 @@ class NewElementAction(QUndoCommand):
 class DeleteElementAction(QUndoCommand):
     def __init__(self, scene: FlowgraphScene):
         QUndoCommand.__init__(self)
-        log.debug("init DeleteElementAction")
+        logger.debug("init DeleteElementAction")
         self.setText("Delete")
         self.scene = scene
         self.g_connections = scene.selected_connections()

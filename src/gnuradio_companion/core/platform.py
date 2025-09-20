@@ -243,18 +243,18 @@ class Platform(Element):
             file_format < 1
             or file_format > Constants.BLOCK_DESCRIPTION_FILE_FORMAT_VERSION
         ):
-            log.error("Unknown format version %d in %s", file_format, file_path)
+            logger.error("Unknown format version %d in %s", file_format, file_path)
             return
 
         block_id = data["id"] = data["id"].rstrip("_")
 
         if block_id in self.block_classes_build_in:
-            log.warning(
+            logger.warning(
                 "Not overwriting build-in block %s with %s", block_id, file_path
             )
             return
         if block_id in self.blocks:
-            log.warning(
+            logger.warning(
                 'Block with id "%s" loaded from\n  %s\noverwritten by\n  %s',
                 block_id,
                 self.blocks[block_id].loaded_from,
@@ -265,8 +265,8 @@ class Platform(Element):
             block_cls = self.blocks[block_id] = self.new_block_class(**data)
             block_cls.loaded_from = file_path
         except errors.BlockLoadError as error:
-            log.error("Unable to load block %s", block_id)
-            log.exception(error)
+            logger.error("Unable to load block %s", block_id)
+            logger.exception(error)
             return
 
         self._docstring_extractor.query(
@@ -279,7 +279,7 @@ class Platform(Element):
         log = logger.getChild("domain_loader")
         domain_id = data["id"]
         if domain_id in self.domains:  # test against repeated keys
-            log.debug('Domain "{}" already exists. Ignoring: %s', file_path)
+            logger.debug('Domain "{}" already exists. Ignoring: %s', file_path)
             return
 
         color = data.get("color", "")
@@ -287,7 +287,7 @@ class Platform(Element):
             try:
                 tuple(int(color[o : o + 2], 16) / 255.0 for o in range(1, 6, 2))
             except ValueError:
-                log.warning('Cannot parse color code "%s" in %s', color, file_path)
+                logger.warning('Cannot parse color code "%s" in %s', color, file_path)
                 return
 
         self.domains[domain_id] = self.Domain(
@@ -300,7 +300,7 @@ class Platform(Element):
             try:
                 source_id, sink_id = connection.get("type", [])
             except ValueError:
-                log.warn("Invalid connection template.")
+                logger.warning("Invalid connection template.")
                 continue
             connection_id = str(source_id), str(sink_id)
             self.connection_templates[connection_id] = connection.get("connect", "")
@@ -312,12 +312,12 @@ class Platform(Element):
     def load_category_tree_description(self, data, file_path):
         """Parse category tree file and add it to list"""
         log = logger.getChild("tree_loader")
-        log.debug("Loading %s", file_path)
+        logger.debug("Loading %s", file_path)
         path = []
 
         def load_category(name, elements):
             if not isinstance(name, str):
-                log.debug("Invalid name %r", name)
+                logger.debug("Invalid name %r", name)
                 return
             path.append(name)
             for element in utils.to_list(elements):
@@ -327,13 +327,13 @@ class Platform(Element):
                 elif isinstance(element, dict):
                     load_category(*next(iter(element.items())))
                 else:
-                    log.debug("Ignoring some elements of %s", name)
+                    logger.debug("Ignoring some elements of %s", name)
             path.pop()
 
         try:
             module_name, categories = next(iter(data.items()))
         except (AttributeError, StopIteration):
-            log.warning("no valid data found")
+            logger.warning("no valid data found")
         else:
             load_category(module_name, categories)
 

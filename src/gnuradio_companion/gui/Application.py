@@ -25,7 +25,7 @@ from ..core.Connection import Connection
 from ..core.blocks import Block
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Application(Gtk.Application):
@@ -52,7 +52,7 @@ class Application(Gtk.Application):
         self.platform = platform
         self.config = platform.config
 
-        log.debug("Application()")
+        logger.debug("Application()")
         # Connect all actions to _handle_action
         for x in Actions.get_actions():
             Actions.connect(x, handler=self._handle_action)
@@ -71,11 +71,11 @@ class Application(Gtk.Application):
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
-        log.debug("Application.do_startup()")
+        logger.debug("Application.do_startup()")
 
     def do_activate(self):
         Gtk.Application.do_activate(self)
-        log.debug("Application.do_activate()")
+        logger.debug("Application.do_activate()")
 
         self.main_window = MainWindow(self, self.platform)
         self.main_window.connect("delete-event", self._quit)
@@ -85,7 +85,7 @@ class Application(Gtk.Application):
         Messages.register_messenger(self.main_window.add_console_line)
         Messages.send_init(self.platform)
 
-        log.debug("Calling Actions.APPLICATION_INITIALIZE")
+        logger.debug("Calling Actions.APPLICATION_INITIALIZE")
         Actions.APPLICATION_INITIALIZE()
 
     def _quit(self, window, event):
@@ -101,7 +101,7 @@ class Application(Gtk.Application):
         return True
 
     def _handle_action(self, action, *args):
-        log.debug("_handle_action({0}, {1})".format(action, args))
+        logger.debug("_handle_action({0}, {1})".format(action, args))
         main = self.main_window
         page = main.current_page
         flow_graph = page.flow_graph if page else None
@@ -114,7 +114,7 @@ class Application(Gtk.Application):
         # Initialize/Quit
         ##################################################
         if action == Actions.APPLICATION_INITIALIZE:
-            log.debug("APPLICATION_INITIALIZE")
+            logger.debug("APPLICATION_INITIALIZE")
             file_path_to_show = self.config.file_open()
             for file_path in self.init_file_paths or self.config.get_open_files():
                 if os.path.exists(file_path):
@@ -518,7 +518,7 @@ class Application(Gtk.Application):
             # to be visible.
             varedit = Actions.TOGGLE_FLOW_GRAPH_VAR_EDITOR
             if active:
-                log.debug(
+                logger.debug(
                     "Variables are hidden. Forcing the variable panel to be visible."
                 )
                 varedit.disable()
@@ -856,7 +856,7 @@ class Application(Gtk.Application):
             )
 
         else:
-            log.warning('!!! Action "%s" not handled !!!' % action)
+            logger.warning('!!! Action "%s" not handled !!!' % action)
         ##################################################
         # Global Actions for all States
         ##################################################

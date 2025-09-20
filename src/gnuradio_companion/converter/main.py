@@ -91,10 +91,10 @@ class Converter(object):
     def load_block_xml(self, xml_file, force=False):
         """Load block description from xml file"""
         if any(part in xml_file for part in excludes) and not force:
-            logger.warn("Skipping {} because name is blacklisted!".format(xml_file))
+            logger.warning("Skipping {} because name is blacklisted!".format(xml_file))
             return False
         elif any(part in xml_file for part in excludes) and force:
-            logger.warn("Forcing conversion of blacklisted file: {}".format(xml_file))
+            logger.warning("Forcing conversion of blacklisted file: {}".format(xml_file))
 
         block_id_from_xml = path.basename(xml_file)[:-4]
         yml_file = path.join(self.output_dir, block_id_from_xml + ".block.yml")

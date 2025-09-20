@@ -56,7 +56,7 @@ class BlockSearchBar(QLineEdit):
             self.setText("")
             self.parent.populate_tree(self.parent._block_tree)
         else:
-            log.info(f"No block named {label}")
+            logger.info(f"No block named {label}")
 
 
 def get_items(model):
@@ -230,7 +230,7 @@ class BlockLibrary(QDockWidget, base.Component):
         # Loop through all of the blocks and create the nested hierarchy (this can be unlimited nesting)
         # This takes advantage of Python's use of references to move through the nested layers
 
-        log.info("Loading blocks")
+        logger.info("Loading blocks")
         block_tree = {}
         for block in self.platform.blocks.values():
             if block.category:
@@ -306,7 +306,7 @@ class BlockLibrary(QDockWidget, base.Component):
             return found
 
         # Call the nested function recursively to populate the block tree
-        log.debug("Populating the treeview")
+        logger.debug("Populating the treeview")
         _populate(block_tree, self._model.invisibleRootItem())
         self._library.expand(
             self._model.item(0, 0).index()

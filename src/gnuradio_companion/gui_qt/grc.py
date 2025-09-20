@@ -41,7 +41,7 @@ class Application(QtWidgets.QApplication):
 
     def __init__(self, settings, platform, file_path):
         # Note. Logger must have the correct naming convention to share handlers
-        log.debug("__init__")
+        logger.debug("__init__")
         self.settings = settings
         self.platform = platform
         config = platform.config
@@ -49,12 +49,12 @@ class Application(QtWidgets.QApplication):
         self.qsettings = QtCore.QSettings(
             config.gui_prefs_file, QtCore.QSettings.IniFormat
         )
-        log.debug(f"Using QSettings from {config.gui_prefs_file}")
+        logger.debug(f"Using QSettings from {config.gui_prefs_file}")
         os.environ["QT_SCALE_FACTOR"] = self.qsettings.value(
             "appearance/qt_scale_factor", "1.0", type=str
         )
 
-        log.debug("Creating QApplication instance")
+        logger.debug("Creating QApplication instance")
         QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts, True)
         QtWidgets.QApplication.__init__(self, settings.argv)
 
@@ -66,17 +66,17 @@ class Application(QtWidgets.QApplication):
                 self.setStyleSheet(qdarkstyle.load_stylesheet())
                 self.theme = "dark"
             except ImportError:
-                log.warning("Did not find QDarkstyle. Dark mode disabled")
+                logger.warning("Did not find QDarkstyle. Dark mode disabled")
 
         # Load the main view class and initialize QMainWindow
-        log.debug("ARGV - {0}".format(settings.argv))
-        log.debug("INSTALL_DIR - {0}".format(settings.path.INSTALL))
+        logger.debug("ARGV - {0}".format(settings.argv))
+        logger.debug("INSTALL_DIR - {0}".format(settings.path.INSTALL))
 
         # Global signals
         self.signals = {}
 
         # Setup the main application window
-        log.debug("Creating main application window")
+        logger.debug("Creating main application window")
         stopwatch = StopWatch()
         self.MainWindow = components.MainWindow(file_path)
         stopwatch.lap("mainwindow")
@@ -101,20 +101,20 @@ class Application(QtWidgets.QApplication):
         self.MainWindow.ExampleBrowser.set_library(self.BlockLibrary)
 
         # Debug times
-        log.debug(
+        logger.debug(
             "Loaded MainWindow controller - {:.4f}s".format(
                 stopwatch.elapsed("mainwindow")
             )
         )
-        log.debug(
+        logger.debug(
             "Loaded Console component - {:.4f}s".format(stopwatch.elapsed("console"))
         )
-        log.debug(
+        logger.debug(
             "Loaded BlockLibrary component - {:.4}s".format(
                 stopwatch.elapsed("blocklibrary")
             )
         )
-        # log.debug("Loaded DocumentationTab component - {:.4}s".format(stopwatch.elapsed("documentationtab")))
+        # logger.debug("Loaded DocumentationTab component - {:.4}s".format(stopwatch.elapsed("documentationtab")))
 
         # Print Startup information once everything has loaded
         self.Console.enable()
@@ -127,14 +127,14 @@ class Application(QtWidgets.QApplication):
             f"Block paths:\n\t{paths}\n"
             f"Using {QtGui.QIcon.themeName()} icon theme\n"
         )
-        log.info(textwrap.dedent(welcome))
+        logger.info(textwrap.dedent(welcome))
 
-        log.debug(f"devicePixelRatio {self.MainWindow.screen().devicePixelRatio()}")
+        logger.debug(f"devicePixelRatio {self.MainWindow.screen().devicePixelRatio()}")
 
         if (self.qsettings.value("appearance/theme", "dark") == "dark") and (
             self.theme == "light"
         ):
-            log.warning("Could not apply dark theme. Is QDarkStyle installed?")
+            logger.warning("Could not apply dark theme. Is QDarkStyle installed?")
 
     # Global registration functions
     #  - Handles the majority of child controller interaciton
@@ -146,7 +146,7 @@ class Application(QtWidgets.QApplication):
         """Allows child controllers to register a widget that can be docked in the main window"""
         # TODO: Setup the system to automatically add new "Show <View Name>" menu items when a new
         # dock widget is added.
-        log.debug(
+        logger.debug(
             "Registering widget ({0}, {1})".format(widget.__class__.__name__, location)
         )
         self.MainWindow.registerDockWidget(location, widget)
@@ -161,7 +161,7 @@ class Application(QtWidgets.QApplication):
         #  - MainWindow does not need to call register in the app controller. It can call directly
         #  - Possibly view sidebars and toolbars as submenu
         #  - Have the ability to create an entirely new menu
-        log.debug("Registering menu ({0})".format(menu.title()))
+        logger.debug("Registering menu ({0})".format(menu.title()))
         self.MainWindow.registerMenu(menu)
 
     def registerAction(self, action, menu):

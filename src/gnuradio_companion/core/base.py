@@ -134,7 +134,6 @@ class Element(object):
     ##############################################
     # Type testing
     ##############################################
-    is_flow_graph = False
     is_block = False
     is_dummy_block = False
     is_connection = False

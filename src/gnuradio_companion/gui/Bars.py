@@ -13,7 +13,7 @@ from gi.repository import Gtk, GObject, Gio, GLib
 from . import Actions
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 """
@@ -259,7 +259,7 @@ class MenuHelper(SubMenuHelper):
 
     def build_menu(self, actions, menu):
         for idx, item in enumerate(actions):
-            log.debug("build_menu idx, action: %s, %s", idx, item)
+            logger.debug("build_menu idx, action: %s, %s", idx, item)
             if isinstance(item, tuple):
                 # Create a new submenu
                 parent, child = (item[0], item[1])
@@ -375,7 +375,7 @@ class Menu(Gio.Menu, MenuHelper):
         GObject.GObject.__init__(self)
         MenuHelper.__init__(self)
 
-        log.debug("Building the main menu")
+        logger.debug("Building the main menu")
         self.build_menu(MENU_BAR_LIST, self)
 
 
@@ -385,7 +385,7 @@ class ContextMenu(Gio.Menu, MenuHelper):
     def __init__(self):
         GObject.GObject.__init__(self)
 
-        log.debug("Building the context menu")
+        logger.debug("Building the context menu")
         self.build_menu(CONTEXT_MENU_LIST, self)
 
 

@@ -159,7 +159,7 @@ class PreferencesDialog(QDialog):
         self.tab_widget.addTab(rt_tab, "Runtime")
 
     def save_all(self):
-        log.debug(f"Writing changes to {self.qsettings.fileName()}")
+        logger.debug(f"Writing changes to {self.qsettings.fileName()}")
 
         for cat in self.pref_dict["categories"]:
             for item in cat["items"]:

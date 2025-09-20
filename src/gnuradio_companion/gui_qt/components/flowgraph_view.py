@@ -61,16 +61,16 @@ class FlowgraphView(
         self.process = None
 
     def createActions(self, actions):
-        log.debug("Creating actions")
+        logger.debug("Creating actions")
 
     def contextMenuEvent(self, event):
         super(FlowgraphView, self).contextMenuEvent(event)
 
     def createMenus(self, actions, menus):
-        log.debug("Creating menus")
+        logger.debug("Creating menus")
 
     def createToolbars(self, actions, toolbars):
-        log.debug("Creating toolbars")
+        logger.debug("Creating toolbars")
 
     def get_generator(self) -> Generator:
         return self.generator
@@ -105,7 +105,7 @@ class FlowgraphView(
                 self.scene.addItem(new_block)
                 self.newElement.emit(new_block)
             except:
-                log.warning("Block '{}' was not found".format(block_key))
+                logger.warning("Block '{}' was not found".format(block_key))
 
         # This part no longer works now that we are using a Scene with GraphicsItems, but I'm sure there's still some way to do it
         # bounds = self.scene.itemsBoundingRect()

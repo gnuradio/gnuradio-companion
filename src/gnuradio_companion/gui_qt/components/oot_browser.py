@@ -71,12 +71,12 @@ class OOTBrowser(QtWidgets.QDialog, base.Component):
         for key, val in type_dict.items():
             if key in module:
                 if not type(module.get(key)) == val:
-                    log.error(
+                    logger.error(
                         f"OOT module {module.get('title')} has field {key}, but it's not the correct type. Expected {val}, got {type(module.get(key))}. Ignoring"
                     )
                     valid = False
             else:
-                log.error(
+                logger.error(
                     f"OOT module {module.get('title')} is missing field {key}. Ignoring"
                 )
                 valid = False
@@ -115,7 +115,7 @@ class OOTBrowser(QtWidgets.QDialog, base.Component):
             )
         else:
             self.supp_ver_label.setText("<b>Supported GNU Radio Versions:</b> N/A")
-            log.error(
+            logger.error(
                 f"module {module.get('title')} has invalid manifest field gr_supported_version"
             )
 

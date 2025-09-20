@@ -17,13 +17,13 @@ from .Constants import MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT
 from .DrawingArea import DrawingArea
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Notebook(Gtk.Notebook):
     def __init__(self):
         Gtk.Notebook.__init__(self)
-        log.debug("notebook()")
+        logger.debug("notebook()")
         self.app = Gtk.Application.get_default()
         self.current_page = None
 

@@ -6,13 +6,41 @@
 #
 
 import argparse
+import logging
 import os
 import subprocess
 
-from gnuradio import gr
+try:
+    from gnuradio import gr
+except ImportError as ex:
+
+    class Dummy:
+        def version(self):
+            return "0.0.0"
+
+        def major_version(self):
+            return "0"
+
+        def api_version(self):
+            return "0"
+
+        def minor_version(self):
+            return "0"
+
+        def prefs(self):
+            return {}
+
+        def prefix(self):
+            return "."
+
+    gr = Dummy()
 
 from .core import Messages
 from .core.platform import Platform
+
+from .utilities import logger as custom_logging
+
+logger = logging.getLogger(__name__)
 
 
 def argument_parser():
@@ -49,6 +77,10 @@ def argument_parser():
 
 
 def main(args=None):
+    # TODO: Only for testing!
+    custom_logging.configure_logger(logging.TRACE)
+    logger.notice("<<< Welcome to the GNU Radio Companion compiler (%s) >>>", gr.version())
+
     args = args or argument_parser().parse_args()
 
     platform = Platform(
@@ -68,7 +100,6 @@ def main(args=None):
     except Exception as e:
         exit(str(e))
 
-    Messages.send_init(platform)
     flow_graph = file_path = None
     for grc_file in args.grc_files:
         os.path.exists(grc_file) or exit("Error: missing " + grc_file)

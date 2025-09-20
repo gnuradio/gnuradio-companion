@@ -43,7 +43,7 @@ class WikiTab(QtWidgets.QDockWidget, base.Component):
         try:
             from qtpy.QtWebEngineWidgets import QWebEngineView
         except ImportError:
-            log.error("PyQt QWebEngine missing!")
+            logger.error("PyQt QWebEngine missing!")
             self.hide()
             return
 

@@ -22,7 +22,7 @@ from .Notebook import Notebook, Page
 from ..core import Messages
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 ############################################################
@@ -44,7 +44,7 @@ class MainWindow(Gtk.ApplicationWindow):
         Gtk.ApplicationWindow.__init__(
             self, title="GNU Radio Companion", application=app
         )
-        log.debug("__init__()")
+        logger.debug("__init__()")
 
         self._platform = platform
         self.app = app
@@ -71,7 +71,7 @@ class MainWindow(Gtk.ApplicationWindow):
             self.set_icon(icon.load_icon())
 
         # Create the menu bar and toolbar
-        log.debug("Creating menu")
+        logger.debug("Creating menu")
         generate_modes = platform.get_generate_options()
 
         # This needs to be replaced
@@ -141,7 +141,7 @@ class MainWindow(Gtk.ApplicationWindow):
             self.left_subpanel.set_position(self.config.variable_editor_position())
 
         self.show_all()
-        log.debug("Main window ready")
+        logger.debug("Main window ready")
 
     ############################################################
     # Event Handlers

@@ -97,7 +97,7 @@ def make_screenshot(fg_view, file_path, transparent_bg=False):
         try:
             from qtpy import QtSvg
         except ImportError:
-            log.error(
+            logger.error(
                 "Missing (Python-)QtSvg! Please install it or export as PNG instead."
             )
             return
@@ -110,5 +110,5 @@ def make_screenshot(fg_view, file_path, transparent_bg=False):
         fg_view.render(painter)
         painter.end()
     elif file_path.suffix == ".pdf":
-        log.warning("PDF screen capture not implemented")
+        logger.warning("PDF screen capture not implemented")
         return  # TODO

@@ -12,7 +12,7 @@ from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
 from . import Utils
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def filter_from_dict(vars):
@@ -28,7 +28,7 @@ class Namespace(object):
         self._actions[key] = action
 
     def connect(self, name, handler):
-        # log.debug("Connecting action <{}> to handler <{}>".format(name, handler.__name__))
+        # logger.debug("Connecting action <{}> to handler <{}>".format(name, handler.__name__))
         self._actions[name].connect("activate", handler)
 
     def register(
@@ -59,13 +59,13 @@ class Namespace(object):
             name = name[4:]
 
         if handler:
-            log.debug(
+            logger.debug(
                 "Register action [{}, prefix={}, param={}, handler={}]".format(
                     name, prefix, parameter, handler.__name__
                 )
             )
         else:
-            log.debug(
+            logger.debug(
                 "Register action [{}, prefix={}, param={}, handler=None]".format(
                     name, prefix, parameter
                 )
@@ -95,7 +95,7 @@ class Namespace(object):
                 pass
                 # self.win.add_action(action)
 
-        # log.debug("Registering action as '{}'".format(key))
+        # logger.debug("Registering action as '{}'".format(key))
         self._actions[key] = action
         return action
 
@@ -219,7 +219,7 @@ class Action(Gio.SimpleAction):
             self.activate()
 
     def load_from_preferences(self, *args):
-        log.debug("load_from_preferences({})".format(args))
+        logger.debug("load_from_preferences({})".format(args))
         if self.preference_name is not None:
             config = Gtk.Application.get_default().config
             self.set_active(
@@ -227,7 +227,7 @@ class Action(Gio.SimpleAction):
             )
 
     def save_to_preferences(self, *args):
-        log.debug("save_to_preferences({})".format(args))
+        logger.debug("save_to_preferences({})".format(args))
         if self.preference_name is not None:
             config = Gtk.Application.get_default().config
             config.entry(self.preference_name, value=self.get_active())

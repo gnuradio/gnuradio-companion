@@ -71,7 +71,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         QtWidgets.QMainWindow.__init__(self)
         # base.Component.__init__(self)
 
-        log.debug("Setting the main window")
+        logger.debug("Setting the main window")
         self.setObjectName("main")
         self.setWindowTitle(_("window-title"))
         self.setDockOptions(
@@ -85,11 +85,11 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
 
         # Setup the window icon
         icon = QtGui.QIcon(self.settings.path.ICON)
-        log.debug("Setting window icon - ({0})".format(self.settings.path.ICON))
+        logger.debug("Setting window icon - ({0})".format(self.settings.path.ICON))
         self.setWindowIcon(icon)
 
         monitor = self.screen().availableGeometry()
-        log.debug(
+        logger.debug(
             "Setting window size - ({}, {})".format(monitor.width(), monitor.height())
         )
         self.resize(int(monitor.width() * 0.50), monitor.height())
@@ -137,7 +137,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         # Do other initialization stuff. View should already be allocated and
         # actions dynamically connected to class functions. Also, the log
         # functionality should be also allocated
-        log.debug("__init__")
+        logger.debug("__init__")
 
         # Add the menus from the view
         menus = self.menus
@@ -179,7 +179,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
             self.restoreGeometry(self.app.qsettings.value("window/geometry"))
             self.restoreState(self.app.qsettings.value("window/windowState"))
         except TypeError:
-            log.warning("Could not restore window geometry and state.")
+            logger.warning("Could not restore window geometry and state.")
 
         self.examples_found = False
         self.ExampleBrowser = ExampleBrowser()
@@ -194,7 +194,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.threadpool.start(ExampleFinder)
 
     """def show(self):
-        log.debug("Showing main window")
+        logger.debug("Showing main window")
         self.show()
     """
 
@@ -220,7 +220,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         elif key == VariableEditorAction.ADD_IMPORT:
             self.currentFlowgraphScene.add_block("import", pos)
         else:
-            log.debug(f"{key} not implemented yet")
+            logger.debug(f"{key} not implemented yet")
         self.currentFlowgraphScene.clearSelection()
 
     @property
@@ -275,7 +275,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         Defines all actions for this view.
         Controller manages connecting signals to slots implemented in the controller
         """
-        log.debug("Creating actions")
+        logger.debug("Creating actions")
 
         # File Actions
         actions["new"] = Action(
@@ -687,7 +687,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
 
     def createMenus(self, actions, menus):
         """Setup the main menubar for the application"""
-        log.debug("Creating menus")
+        logger.debug("Creating menus")
 
         # Global menu options
         self.menuBar().setNativeMenuBar(True)
@@ -817,7 +817,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         menus["help"] = help
 
     def createToolbars(self, actions, toolbars):
-        log.debug("Creating toolbars")
+        logger.debug("Creating toolbars")
 
         # Main toolbar
         file = Toolbar("File")
@@ -856,7 +856,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         toolbars["misc"] = misc
 
     def createStatusBar(self):
-        log.debug("Creating status bar")
+        logger.debug("Creating status bar")
         self.statusBar().showMessage(_("ready-message"))
 
     def open(self):
@@ -886,7 +886,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         # This is the only instance where a controller holds a reference to a view it does not
         # actually control.
         name = widget.__class__.__name__
-        log.debug("Generating show action item for widget: {0}".format(name))
+        logger.debug("Generating show action item for widget: {0}".format(name))
 
         # Create the new action and wire it to the show/hide for the widget
         self.menus["panels"].addAction(widget.toggleViewAction())
@@ -897,7 +897,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         # This is also overridden so a show menu item can automatically be added
         super().addToolBar(toolbar)
         name = toolbar.windowTitle()
-        log.debug("Generating show action item for toolbar: {0}".format(name))
+        logger.debug("Generating show action item for toolbar: {0}".format(name))
 
         # Create the new action and wire it to the show/hide for the widget
         self.menus["toolbars"].addAction(toolbar.toggleViewAction())
@@ -936,27 +936,27 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
 
     # Action Handlers
     def new_triggered(self):
-        log.debug("New")
+        logger.debug("New")
         fg_view = FlowgraphView(self, self.platform)
         fg_view.centerOn(0, 0)
         initial_state = self.platform.parse_flow_graph("")
         fg_view.scene().import_data(initial_state)
         fg_view.scene().saved = False
         self.connect_fg_signals(fg_view.scene())
-        log.debug("Adding flowgraph view")
+        logger.debug("Adding flowgraph view")
         self.tabWidget.addTab(fg_view, "Untitled")
         self.tabWidget.setCurrentIndex(self.tabWidget.count() - 1)
         self.tabWidget.tabBar().setTabTextColor(self.tabWidget.currentIndex(), Qt.red)
 
     def open_triggered(self, filename=None, save_allowed=True):
-        log.debug("open")
+        logger.debug("open")
         if not filename:
             filename = self.open()
 
         if filename:
             open_fgs = self.get_open_flowgraphs()
             if filename not in open_fgs:
-                log.info("Opening flowgraph ({0})".format(filename))
+                logger.info("Opening flowgraph ({0})".format(filename))
                 new_flowgraph = FlowgraphView(self, self.platform)
                 initial_state = self.platform.parse_flow_graph(filename)
                 self.tabWidget.addTab(new_flowgraph, os.path.basename(filename))
@@ -978,7 +978,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
                 self.tabWidget.setCurrentIndex(open_fgs.index(filename))
 
     def open_example(self, example_path):
-        log.debug("open example")
+        logger.debug("open example")
         if example_path:
             self.open_triggered(example_path, False)
 
@@ -986,29 +986,29 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         if not self.currentFlowgraphScene.save_allowed:
             self.save_as_triggered()
             return
-        log.debug("save")
+        logger.debug("save")
         filename = self.currentFlowgraphScene.filename
 
         if filename:
             try:
                 self.platform.save_flow_graph(filename, self.currentFlowgraph)
             except IOError:
-                log.error("Save failed")
+                logger.error("Save failed")
                 return
 
-            log.info(f"Saved {filename}")
+            logger.info(f"Saved {filename}")
             self.tabWidget.tabBar().setTabTextColor(
                 self.tabWidget.currentIndex(),
                 self.palette().color(self.palette().WindowText),
             )
             self.currentFlowgraphScene.set_saved(True)
         else:
-            log.debug("Flowgraph does not have a filename")
+            logger.debug("Flowgraph does not have a filename")
             self.save_as_triggered()
         self.updateActions()
 
     def save_as_triggered(self):
-        log.debug("Save As")
+        logger.debug("Save As")
         file_dialog = QtWidgets.QFileDialog()
         file_dialog.setWindowTitle(self.actions["save"].statusTip())
         file_dialog.setNameFilter("Flow Graph Files (*.grc)")
@@ -1023,10 +1023,10 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
             try:
                 self.platform.save_flow_graph(filename, self.currentFlowgraph)
             except IOError:
-                log.error("Save (as) failed")
+                logger.error("Save (as) failed")
                 return
 
-            log.info(f"Saved (as) {filename}")
+            logger.info(f"Saved (as) {filename}")
             self.tabWidget.tabBar().setTabTextColor(
                 self.tabWidget.currentIndex(),
                 self.palette().color(self.palette().WindowText),
@@ -1036,11 +1036,11 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
                 self.tabWidget.currentIndex(), os.path.basename(filename)
             )
         else:
-            log.debug("Cancelled Save As action")
+            logger.debug("Cancelled Save As action")
         self.updateActions()
 
     def save_copy_triggered(self):
-        log.debug("Save Copy")
+        logger.debug("Save Copy")
         file_dialog = QtWidgets.QFileDialog()
         file_dialog.setWindowTitle(self.actions["save"].statusTip())
         file_dialog.setNameFilter("Flow Graph Files (*.grc)")
@@ -1055,11 +1055,11 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
             try:
                 self.platform.save_flow_graph(filename, self.currentFlowgraph)
             except IOError:
-                log.error("Save (copy) failed")
+                logger.error("Save (copy) failed")
 
-            log.info(f"Saved (copy) {filename}")
+            logger.info(f"Saved (copy) {filename}")
         else:
-            log.debug("Cancelled Save Copy action")
+            logger.debug("Cancelled Save Copy action")
 
     def tab_triggered(self, tab_index=None):
         """
@@ -1068,7 +1068,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         Parameters:
             tab_index: switches to tab(tab_index)
         """
-        log.debug(f"Switching to tab (index {tab_index})")
+        logger.debug(f"Switching to tab (index {tab_index})")
         if tab_index < 0:
             return
         self.tabWidget.setCurrentIndex(tab_index)
@@ -1086,7 +1086,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         Returns:
             the file path OR True if a tab was closed (False otherwise)
         """
-        log.debug(f"Closing a tab (index {tab_index})")
+        logger.debug(f"Closing a tab (index {tab_index})")
 
         file_path = self.currentFlowgraphScene.filename
         if tab_index is None:
@@ -1130,7 +1130,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
             return file_path
 
     def close_all_triggered(self):
-        log.debug("close")
+        logger.debug("close")
 
         while self.tabWidget.count() > 1:
             self.close_triggered()
@@ -1138,10 +1138,10 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.close_triggered()
 
     def print_triggered(self):
-        log.debug("print")
+        logger.debug("print")
 
     def screen_capture_triggered(self):
-        log.debug("screen capture")
+        logger.debug("screen capture")
         # TODO: Should be user-set somehow
         background_transparent = True
 
@@ -1157,45 +1157,45 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
                     self.currentView, file_path, background_transparent
                 )
             except ValueError:
-                log.error("Failed to generate screenshot")
+                logger.error("Failed to generate screenshot")
 
     def undo_triggered(self):
-        log.debug("undo")
+        logger.debug("undo")
         self.currentFlowgraphScene.undoStack.undo()
         self.updateActions()
 
     def redo_triggered(self):
-        log.debug("redo")
+        logger.debug("redo")
         self.currentFlowgraphScene.undoStack.redo()
         self.updateActions()
 
     def view_undo_stack_triggered(self):
-        log.debug("view_undo_stack")
+        logger.debug("view_undo_stack")
         self.undoView = QtWidgets.QUndoView(self.currentFlowgraphScene.undoStack)
         self.undoView.setWindowTitle("Undo stack")
         self.undoView.show()
 
     def cut_triggered(self):
-        log.debug("cut")
+        logger.debug("cut")
         self.copy_triggered()
         self.currentFlowgraphScene.delete_selected()
         self.updateActions()
 
     def copy_triggered(self):
-        log.debug("copy")
+        logger.debug("copy")
         self.clipboard = self.currentFlowgraphScene.copy_to_clipboard()
         self.updateActions()
 
     def paste_triggered(self):
-        log.debug("paste")
+        logger.debug("paste")
         if self.clipboard:
             self.currentFlowgraphScene.paste_from_clipboard(self.clipboard)
             self.currentFlowgraphScene.update()
         else:
-            log.debug("clipboard is empty")
+            logger.debug("clipboard is empty")
 
     def delete_triggered(self):
-        log.debug("delete")
+        logger.debug("delete")
         self.currentFlowgraphScene.set_saved(False)
         self.tabWidget.tabBar().setTabTextColor(self.tabWidget.currentIndex(), Qt.red)
         action = DeleteElementAction(self.currentFlowgraphScene)
@@ -1204,18 +1204,18 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.currentFlowgraphScene.update()
 
     def select_all_triggered(self):
-        log.debug("select_all")
+        logger.debug("select_all")
         self.currentFlowgraphScene.select_all()
         self.updateActions()
 
     def select_none_triggered(self):
-        log.debug("select_none")
+        logger.debug("select_none")
         self.currentFlowgraphScene.clearSelection()
         self.updateActions()
 
     def rotate_ccw_triggered(self):
         # Pass to Undo/Redo
-        log.debug("rotate_ccw")
+        logger.debug("rotate_ccw")
         self.currentFlowgraphScene.set_saved(False)
         self.tabWidget.tabBar().setTabTextColor(self.tabWidget.currentIndex(), Qt.red)
         rotateCommand = RotateAction(self.currentFlowgraphScene, -90)
@@ -1225,7 +1225,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
 
     def rotate_cw_triggered(self):
         # Pass to Undo/Redo
-        log.debug("rotate_cw")
+        logger.debug("rotate_cw")
         self.currentFlowgraphScene.set_saved(False)
         self.tabWidget.tabBar().setTabTextColor(self.tabWidget.currentIndex(), Qt.red)
         rotateCommand = RotateAction(self.currentFlowgraphScene, 90)
@@ -1234,7 +1234,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.currentFlowgraphScene.update()
 
     def toggle_source_bus_triggered(self):
-        log.debug("toggle_source_bus")
+        logger.debug("toggle_source_bus")
         self.currentFlowgraphScene.set_saved(False)
         self.tabWidget.tabBar().setTabTextColor(self.tabWidget.currentIndex(), Qt.red)
         bussifyCommand = BussifyAction(self.currentFlowgraphScene, "source")
@@ -1243,7 +1243,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.currentFlowgraphScene.update()
 
     def toggle_sink_bus_triggered(self):
-        log.debug("toggle_sink_bus")
+        logger.debug("toggle_sink_bus")
         self.currentFlowgraphScene.set_saved(False)
         self.tabWidget.tabBar().setTabTextColor(self.tabWidget.currentIndex(), Qt.red)
         bussifyCommand = BussifyAction(self.currentFlowgraphScene, "sink")
@@ -1252,34 +1252,34 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.currentFlowgraphScene.update()
 
     def errors_triggered(self):
-        log.debug("errors")
+        logger.debug("errors")
         err = ErrorsDialog(self.currentFlowgraph)
         err.exec()
 
     def module_browser_triggered(self):
-        log.debug("oot browser")
+        logger.debug("oot browser")
         self.OOTBrowser.show()
 
     def zoom_in_triggered(self):
-        log.debug("zoom in")
+        logger.debug("zoom in")
         self.currentView.zoom(1.1)
 
     def zoom_out_triggered(self):
-        log.debug("zoom out")
+        logger.debug("zoom out")
         self.currentView.zoom(1.0 / 1.1)
 
     def zoom_original_triggered(self):
-        log.debug("zoom to original size")
+        logger.debug("zoom to original size")
         self.currentView.zoomOriginal()
 
     def find_triggered(self):
-        log.debug("find block")
+        logger.debug("find block")
         self._app().BlockLibrary._search_bar.clear()
         self._app().BlockLibrary._search_bar.setFocus()
         self._app().BlockLibrary.reset()
 
     def get_involved_triggered(self):
-        log.debug("get involved")
+        logger.debug("get involved")
         ad = QtWidgets.QMessageBox()
         ad.setWindowTitle("Get Involved Instructions")
         ad.setText(
@@ -1292,7 +1292,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         ad.exec()
 
     def about_triggered(self):
-        log.debug("about")
+        logger.debug("about")
         config = self.platform.config
         py_version = sys.version.split()[0]
         QtWidgets.QMessageBox.about(
@@ -1300,17 +1300,17 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         )
 
     def about_qt_triggered(self):
-        log.debug("about_qt")
+        logger.debug("about_qt")
         QtWidgets.QApplication.instance().aboutQt()
 
     def properties_triggered(self):
-        log.debug("properties")
+        logger.debug("properties")
         if len(self.currentFlowgraphScene.selected_blocks()) != 1:
-            log.warn("Opening Properties even though selected_blocks() != 1 ")
+            logger.warning("Opening Properties even though selected_blocks() != 1 ")
         self.currentFlowgraphScene.selected_blocks()[0].open_properties()
 
     def enable_triggered(self):
-        log.debug("enable")
+        logger.debug("enable")
         self.currentFlowgraphScene.set_saved(False)
         all_enabled = True
         for block in self.currentFlowgraphScene.selected_blocks():
@@ -1326,7 +1326,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.updateActions()
 
     def disable_triggered(self):
-        log.debug("disable")
+        logger.debug("disable")
         self.currentFlowgraphScene.set_saved(False)
         all_disabled = True
         for g_block in self.currentFlowgraphScene.selected_blocks():
@@ -1342,7 +1342,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.updateActions()
 
     def bypass_triggered(self):
-        log.debug("bypass")
+        logger.debug("bypass")
         all_bypassed = True
         for g_block in self.currentFlowgraphScene.selected_blocks():
             if not g_block.core.state == "bypassed":
@@ -1357,17 +1357,17 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.updateActions()
 
     def block_inc_type_triggered(self):
-        log.debug("block_inc_type")
+        logger.debug("block_inc_type")
 
     def block_dec_type_triggered(self):
-        log.debug("block_dec_type")
+        logger.debug("block_dec_type")
 
     def generate_triggered(self):
-        log.debug("generate")
+        logger.debug("generate")
         if not self.currentFlowgraphScene.saved:
             self.save_triggered()
         if not self.currentFlowgraphScene.saved:  # The line above was cancelled
-            log.error("Cannot generate a flowgraph without saving first")
+            logger.error("Cannot generate a flowgraph without saving first")
             return
 
         filename = self.currentFlowgraphScene.filename
@@ -1376,10 +1376,10 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         )
         generator.write()
         self.currentView.generator = generator
-        log.info(f"Generated {generator.file_path}")
+        logger.info(f"Generated {generator.file_path}")
 
     def execute_triggered(self):
-        log.debug("execute")
+        logger.debug("execute")
         if self.currentView.process_is_done():
             self.generate_triggered()
             if self.currentView.generator:
@@ -1402,7 +1402,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
                     )
 
     def kill_triggered(self):
-        log.debug("kill")
+        logger.debug("kill")
 
     def show_help(parent):
         """Display basic usage tips."""
@@ -1429,7 +1429,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         ad.exec()
 
     def types_triggered(self):
-        log.debug("types")
+        logger.debug("types")
         colors = [(name, color) for name, key, sizeof, color in Constants.CORE_TYPES]
 
         message = """
@@ -1450,7 +1450,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         ad.exec()
 
     def keys_triggered(self):
-        log.debug("keys")
+        logger.debug("keys")
 
         message = """\
             <b>Keyboard Shortcuts</b>
@@ -1492,7 +1492,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         ad.exec()
 
     def preferences_triggered(self):
-        log.debug("preferences")
+        logger.debug("preferences")
         prefs_dialog = PreferencesDialog(self.app.qsettings)
         if prefs_dialog.exec_():  # User pressed Save
             prefs_dialog.save_all()
@@ -1530,7 +1530,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
             ad.exec()
 
     def exit_triggered(self):
-        log.debug("exit")
+        logger.debug("exit")
 
         files_open = []
         range_ = reversed(range(self.tabWidget.count()))
@@ -1574,25 +1574,25 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         self.app.exit()
 
     def closeEvent(self, evt):
-        log.debug("Close Event")
+        logger.debug("Close Event")
         self.exit_triggered()
         evt.ignore()
 
     def help_triggered(self):
-        log.debug("help")
+        logger.debug("help")
         self.show_help()
 
     def report_triggered(self):
-        log.debug("report")
+        logger.debug("report")
 
     def library_triggered(self):
-        log.debug("library_triggered")
+        logger.debug("library_triggered")
 
     def library_toggled(self):
-        log.debug("library_toggled")
+        logger.debug("library_toggled")
 
     def filter_design_tool_triggered(self):
-        log.debug("filter_design_tool")
+        logger.debug("filter_design_tool")
         subprocess.Popen(
             "gr_filter_design",
             shell=True,
@@ -1601,12 +1601,12 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
         )
 
     def start_profiler_triggered(self):
-        log.info("Starting profiler")
+        logger.info("Starting profiler")
         self.profiler.enable()
 
     def stop_profiler_triggered(self):
         self.profiler.disable()
-        log.info("Stopping profiler")
+        logger.info("Stopping profiler")
         stats = pstats.Stats(self.profiler)
         stats.dump_stats("stats.prof")
 

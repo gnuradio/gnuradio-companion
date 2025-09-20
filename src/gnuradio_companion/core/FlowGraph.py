@@ -20,11 +20,11 @@ from .blocks import Block
 from .params import Param
 from .utils import expr_utils
 
-log = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)
 
 
 class FlowGraph(Element):
-    is_flow_graph = True
 
     def __init__(self, parent: Element):
         """
@@ -247,7 +247,7 @@ class FlowGraph(Element):
                 # this is ok behavior, unfortunately we could be hiding other import bugs
                 pass
             except Exception:
-                log.exception(
+                logger.exception(
                     f'Failed to evaluate import expression "{expr}"', exc_info=True
                 )
                 pass
@@ -260,7 +260,7 @@ class FlowGraph(Element):
                 exec(expr, module.__dict__)
                 namespace[id] = module
             except Exception:
-                log.exception(
+                logger.exception(
                     f"Failed to evaluate expression in module {id}", exc_info=True
                 )
                 pass
@@ -276,7 +276,7 @@ class FlowGraph(Element):
                 value = eval(parameter_block.params["value"].to_code(), namespace)
                 np[parameter_block.name] = value
             except Exception:
-                log.exception(
+                logger.exception(
                     f"Failed to evaluate parameter block {parameter_block.name}",
                     exc_info=True,
                 )
@@ -298,7 +298,7 @@ class FlowGraph(Element):
             except TypeError:  # Type Errors may happen, but that doesn't matter as they are displayed in the gui
                 pass
             except Exception:
-                log.exception(
+                logger.exception(
                     f"Failed to evaluate variable block {variable_block.name}",
                     exc_info=True,
                 )

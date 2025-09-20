@@ -41,7 +41,7 @@ class Component(object):
         Sets up the references to the QApplication and the GNU Radio platform.
         Calls createActions() to initialize the component's actions.
         """
-        log.debug("Initializing {}".format(self.__class__.__name__))
+        logger.debug("Initializing {}".format(self.__class__.__name__))
 
         # Application reference - Use weak references to avoid issues with circular references
         # Platform and settings properties are accessed through this reference
@@ -58,7 +58,7 @@ class Component(object):
         self.createToolbars(self.actions, self.toolbars)
         """
 
-        log.debug("Connecting signals")
+        logger.debug("Connecting signals")
         self.connectSlots()
 
     # Properties
@@ -124,14 +124,14 @@ class Component(object):
                 try:
                     handler = key + toggledHandler
                     actions[key].toggled.connect(getattr(self, handler))
-                    log.debug(
+                    logger.debug(
                         "<{0}.toggled> connected to handler <{1}>".format(key, handler)
                     )
                     # Successful connection. Jump to the next action.
                     continue
                 except:
                     # Default to the triggered handler
-                    log.warning(
+                    logger.warning(
                         "Could not connect <{0}.toggled> to handler <{1}>".format(
                             key, handler
                         )
@@ -141,12 +141,12 @@ class Component(object):
             try:
                 handler = key + triggeredHandler
                 actions[key].triggered.connect(getattr(self, handler))
-                log.debug(
+                logger.debug(
                     "<{0}.triggered> connected to handler <{1}>".format(key, handler)
                 )
             except:
                 try:
-                    log.warning(
+                    logger.warning(
                         "Handler not implemented for <{0}.triggered> in {1}".format(
                             key, type(self).__name__
                         )
@@ -154,7 +154,7 @@ class Component(object):
                     actions[key].triggered.connect(getattr(self, "notImplemented"))
                 except:
                     # This should never happen
-                    log.error("Class cannot handle <{0}.triggered>".format(key))
+                    logger.error("Class cannot handle <{0}.triggered>".format(key))
 
     def notImplemented(self):
-        log.warning("Not implemented")
+        logger.warning("Not implemented")

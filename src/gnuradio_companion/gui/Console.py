@@ -18,13 +18,13 @@ import gi
 gi.require_version("Gtk", "3.0")
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Console(Gtk.ScrolledWindow):
     def __init__(self):
         Gtk.ScrolledWindow.__init__(self)
-        log.debug("console()")
+        logger.debug("console()")
         self.app = Gtk.Application.get_default()
 
         self.text_display = TextDisplay()

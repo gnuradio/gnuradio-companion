@@ -392,7 +392,7 @@ class GUIBlock(QGraphicsItem):
 
     def mousePressEvent(self, e):
         super(self.__class__, self).mousePressEvent(e)
-        log.debug(f"{self} clicked")
+        logger.debug(f"{self} clicked")
         url_prefix = str(self.core.parent_platform.config.wiki_block_docs_url_prefix)
         QApplication.instance().WikiTab.setURL(
             QUrl(url_prefix + self.core.label.replace(" ", "_"))
@@ -432,7 +432,7 @@ class GUIBlock(QGraphicsItem):
             return QGraphicsItem.itemChange(self, change, value)
 
     def rotate(self, rotation):
-        log.debug(f"Rotating {self.core.name}")
+        logger.debug(f"Rotating {self.core.name}")
         new_rotation = (self.rotation() + rotation) % 360
         self.setRotation(new_rotation)
         self.core.states["rotation"] = new_rotation

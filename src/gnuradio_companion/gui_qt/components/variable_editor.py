@@ -86,13 +86,13 @@ class VariableEditor(QDockWidget, base.Component):
     # Actions
 
     def createActions(self, actions):
-        log.debug("Creating actions")
+        logger.debug("Creating actions")
 
     def createMenus(self, actions, menus):
-        log.debug("Creating menus")
+        logger.debug("Creating menus")
 
     def createToolbars(self, actions, toolbars):
-        log.debug("Creating toolbars")
+        logger.debug("Creating toolbars")
 
     def contextMenuEvent(self, event):
         self.right_click_menu.exec_(self.mapToGlobal(event.pos()))
@@ -240,7 +240,7 @@ class VariableEditor(QDockWidget, base.Component):
     Slot(VariableEditorAction)
 
     def handle_action(self, action):
-        log.debug(f"{action} triggered!")
+        logger.debug(f"{action} triggered!")
         """
         Single handler for the different actions that can be triggered by the context menu,
         key presses or mouse clicks. Also triggers an update of the flow graph and editor.
