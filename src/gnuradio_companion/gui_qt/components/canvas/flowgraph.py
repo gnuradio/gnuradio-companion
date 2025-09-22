@@ -39,8 +39,7 @@ from ...external_editor import ExternalEditor
 from .block import GUIBlock
 from .connection import GUIConnection
 
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_X = 400
 DEFAULT_MAX_Y = 300

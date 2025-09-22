@@ -10,9 +10,7 @@ from qtpy import QtCore, QtWidgets, uic
 from .. import base
 from ..properties import Paths
 
-
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 
 class OOTBrowser(QtWidgets.QDialog, base.Component):

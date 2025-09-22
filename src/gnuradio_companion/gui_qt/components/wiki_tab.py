@@ -25,8 +25,7 @@ from qtpy import QtWidgets
 # Custom modules
 from .. import base
 
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 
 class WikiTab(QtWidgets.QDockWidget, base.Component):

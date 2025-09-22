@@ -15,12 +15,11 @@ import pathlib
 from itertools import chain
 from typing import Type
 
-from . import Messages, Constants, blocks, params, ports, errors, utils, schema_checker
+from . import Constants, blocks, params, ports, errors, utils, schema_checker
 from .blocks import Block
 
 from .Config import Config
 from .cache import Cache
-from .base import Element
 from .io import yaml
 from .generator import Generator
 from .FlowGraph import FlowGraph
@@ -29,13 +28,50 @@ from .Connection import Connection
 logger = logging.getLogger(__name__)
 
 
-class Platform(Element):
-    def __init__(self, *args, **kwargs):
-        """Make a platform for GNU Radio"""
-        Element.__init__(self, parent=None)
+class Platform():
 
-        self.config = self.Config(*args, **kwargs)
+    def __init__(self):
+        """
+        Detects, loads, and interacts with the GNU Radio runtime environment.
+        
+        This is the central interface between GRC and the GNU Radio and system runtimes and 
+        it is responsible for detecting GNU Radio in the current execution context, loading any
+        dependendencies and related configurations, and exposing the runtime capabilities to 
+        other GRC components. This will load all available block definitions and other runtime
+        configurations and handle all connectivitiy to the runtime, but does not directly handle
+        operations on specific flowgraphs.
+        """
+
+        # Load GNU Radio from the local environment
+        logger.debug("Searching for the GNU Radio runtime")
+        try:
+            from gnuradio import gr 
+
+            # Save a reference to the loaded module so we don't need to import it elsewhere
+            self._runtime = gr
+
+            version=gr.version()
+            version_parts=(gr.major_version(), gr.api_version(), gr.minor_version())
+            prefs=gr.prefs()
+            install_prefix=gr.prefix()
+
+            logger.info("Found GNU Radio runtime: version=%s prefix=%s", gr.version(), gr.prefix())
+        
+        except ImportError as ex:
+            logger.warning("Unable to find GNU Radio!")
+            logger.warning("Have you sourced the environment file?")
+            logger.debug("Limited functionality is available since no runtime was detected.")
+            self._runtime = None
+
+            version=3
+            version_parts=(3, 11, 0)
+            prefs=None
+            install_prefix=""
+
+        self.config = self.Config(version=version, version_parts=version_parts, prefs=prefs, install_prefix=install_prefix)
+
         self.block_docstrings = {}
+
         # dummy to be replaced by BlockTreeWindow
         self.block_docstrings_loaded_callback = lambda: None
 
@@ -53,6 +89,9 @@ class Platform(Element):
 
         self._block_categories = {}
         self._auto_hier_block_generate_chain = set()
+
+        self.build_library()
+        logger.debug("Runtime loaded")
 
     def __str__(self):
         return "Platform - {}".format(self.config.name)
@@ -75,10 +114,9 @@ class Platform(Element):
 
     def load_and_generate_flow_graph(self, file_path, out_dir=None, hier_only=False):
         """Loads a flow graph from file and generates it"""
-        Messages.set_indent(len(self._auto_hier_block_generate_chain))
-        Messages.send(">>> Loading: {}\n".format(file_path))
+        logger.info(">>> Loading: %s", file_path)
         if file_path in self._auto_hier_block_generate_chain:
-            Messages.send("    >>> Warning: cyclic hier_block dependency\n")
+            logger.warning(">>> Warning: cyclic hier_block dependency")
             return None, None
         self._auto_hier_block_generate_chain.add(file_path)
         try:
@@ -95,22 +133,20 @@ class Platform(Element):
             ):
                 raise Exception("Not a hier block")
         except Exception as e:
-            Messages.send(">>> Load Error: {}: {}\n".format(file_path, str(e)))
-            Messages.send_flowgraph_error_report(flow_graph)
+            logger.exception(">>> Load Error: %s", file_path)
             return None, None
         finally:
             self._auto_hier_block_generate_chain.discard(file_path)
-            Messages.set_indent(len(self._auto_hier_block_generate_chain))
 
         try:
             if flow_graph.get_option("generate_options").startswith("hb"):
                 generator = self.Generator(flow_graph, out_dir)
             else:
                 generator = self.Generator(flow_graph, out_dir or file_path)
-            Messages.send(">>> Generating: {}\n".format(generator.file_path))
+            logger.info(">>> Generating: %s", generator.file_path)
             generator.write()
         except Exception as e:
-            Messages.send(">>> Generate Error: {}: {}\n".format(file_path, str(e)))
+            logger.exception(">>> Generate Error: %s", file_path)
             return None, None
 
         return flow_graph, generator.file_path
@@ -169,8 +205,9 @@ class Platform(Element):
                 except Exception as error:
                     logger.exception("Error while loading %s", file_path)
                     logger.exception(error)
-                    Messages.flowgraph_error = error
-                    Messages.flowgraph_error_file = file_path
+                    # TODO: Better error tracking.
+                    #Messages.flowgraph_error = error
+                    #Messages.flowgraph_error_file = file_path
                     continue
 
         for key, block in self.blocks.items():
@@ -364,20 +401,18 @@ class Platform(Element):
                 validator.run(data)
 
         if is_xml:
-            Messages.send(">>> Converting from XML\n")
+            logger.info(">>> Converting from XML")
             from ..converter.flow_graph import from_xml
 
             data = from_xml(filename)
 
         file_format = data.get("metadata", {}).get("file_format")
         if file_format is None:
-            Messages.send(
-                ">>> WARNING: Flow graph does not contain a file format version!\n"
-            )
+            logger.warning(">>> Flow graph does not contain a file format version!")
         elif file_format == 0:
-            Messages.send(
-                ">>> WARNING: Flow graph format is version 0 (legacy) and will"
-                " be converted to version 1 or higher upon saving!\n"
+            logger.warning(
+                ">>> Flow graph format is version 0 (legacy) and will"
+                " be converted to version 1 or higher upon saving!"
             )
         elif file_format > Constants.FLOW_GRAPH_FILE_FORMAT_VERSION:
             raise RuntimeError(f"Flow graph {filename} has unknown flow graph version!")

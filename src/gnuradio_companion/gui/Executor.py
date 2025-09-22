@@ -5,6 +5,7 @@
 #
 
 
+import logging
 import os
 import shlex
 import subprocess
@@ -15,8 +16,10 @@ from shutil import which as find_executable
 
 from gi.repository import GLib
 
-from ..core import Messages
 from . import Utils
+
+
+logger = logging.getLogger(__name__)
 
 
 class ExecFlowGraphThread(threading.Thread):
@@ -42,8 +45,8 @@ class ExecFlowGraphThread(threading.Thread):
             self.update_callback()
             self.start()
         except Exception as e:
-            Messages.send_verbose_exec(str(e))
-            Messages.send_end_exec()
+            logger.exception(e)
+            logger.error(">>> Done")
 
     def _popen(self):
         """
@@ -64,7 +67,7 @@ class ExecFlowGraphThread(threading.Thread):
         # this does not reproduce a shell executable command string, if a graphical
         # terminal is used. Passing run_command though shlex_quote would do it but
         # it looks really ugly and confusing in the console panel.
-        Messages.send_start_exec(" ".join(run_command_args))
+        logger.info("Executing: %s", " ".join(run_command_args))
 
         dirname = Path(generator.file_path).parent
 
@@ -95,7 +98,7 @@ class ExecFlowGraphThread(threading.Thread):
         nproc = Utils.get_cmake_nproc()
 
         run_command_args = f"cmake .. && cmake --build . -j{nproc} && cd ../.. && {xterm_executable} -e {run_command}"
-        Messages.send_start_exec(run_command_args)
+        logger.info("Executing: %s", run_command_args)
 
         return subprocess.Popen(
             args=run_command_args,
@@ -114,7 +117,7 @@ class ExecFlowGraphThread(threading.Thread):
         # handle completion
         r = "\n"
         while r:
-            GLib.idle_add(Messages.send_verbose_exec, r)
+            GLib.idle_add(logger.info, r)
             r = self.process.stdout.read(1)
 
         # Properly close pipe before thread is terminated
@@ -127,6 +130,6 @@ class ExecFlowGraphThread(threading.Thread):
 
     def done(self):
         """Perform end of execution tasks."""
-        Messages.send_end_exec(self.process.returncode)
+        logger.info(">>> Done (return code %s)", self.process.returncode)
         self.page.process = None
         self.update_callback()

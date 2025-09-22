@@ -19,8 +19,6 @@ from .Constants import NEW_FLOGRAPH_TITLE, DEFAULT_CONSOLE_WINDOW_WIDTH
 from .Dialogs import TextDisplay, MessageDialogWrapper
 from .Notebook import Notebook, Page
 
-from ..core import Messages
-
 
 logger = logging.getLogger(__name__)
 
@@ -252,7 +250,7 @@ class MainWindow(Gtk.ApplicationWindow):
             return
         try:  # try to load from file
             if file_path:
-                Messages.send_start_load(file_path)
+                logger.info("Loading: %s", file_path)
             flow_graph = self._platform.make_flow_graph()
             flow_graph.grc_file_path = file_path
             # print flow_graph
@@ -261,17 +259,18 @@ class MainWindow(Gtk.ApplicationWindow):
                 flow_graph=flow_graph,
                 file_path=file_path,
             )
-            if getattr(Messages, "flowgraph_error") is not None:
-                Messages.send(
-                    ">>> Check: {}\n>>> FlowGraph Error: {}\n".format(
-                        str(Messages.flowgraph_error_file),
-                        str(Messages.flowgraph_error),
-                    )
-                )
+            # TODO: Fix error handling.
+            # if getattr(Messages, "flowgraph_error") is not None:
+            #     Messages.send(
+            #         ">>> Check: {}\n>>> FlowGraph Error: {}\n".format(
+            #             str(Messages.flowgraph_error_file),
+            #             str(Messages.flowgraph_error),
+            #         )
+            #     )
             if file_path:
-                Messages.send_end_load()
+                logger.info(">>> Done")
         except Exception as e:  # return on failure
-            Messages.send_fail_load(e)
+            logger.exception("Error: %s\n>>> Failure", e)
             if isinstance(e, KeyError) and str(e) == "'options'":
                 # This error is unrecoverable, so crash gracefully
                 exit(-1)

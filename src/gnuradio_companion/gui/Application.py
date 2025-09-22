@@ -19,8 +19,6 @@ from .MainWindow import MainWindow
 
 # from .ParserErrorsDialog import ParserErrorsDialog
 from .PropsDialog import PropsDialog
-
-from ..core import Messages
 from ..core.Connection import Connection
 from ..core.blocks import Block
 
@@ -80,10 +78,6 @@ class Application(Gtk.Application):
         self.main_window = MainWindow(self, self.platform)
         self.main_window.connect("delete-event", self._quit)
         self.get_focus_flag = self.main_window.get_focus_flag
-
-        # setup the messages
-        Messages.register_messenger(self.main_window.add_console_line)
-        Messages.send_init(self.platform)
 
         logger.debug("Calling Actions.APPLICATION_INITIALIZE")
         Actions.APPLICATION_INITIALIZE()
@@ -703,7 +697,7 @@ class Application(Gtk.Application):
                     flow_graph.grc_file_path = page.file_path
                     page.saved = True
                 except IOError:
-                    Messages.send_fail_save(page.file_path)
+                    logger.error(">>> Error: Cannot save: %s", page.file_path)
                     page.saved = False
         elif action == Actions.FLOW_GRAPH_SAVE_AS:
             file_path = FileDialogs.SaveFlowGraph(main, page.file_path).run()
@@ -723,7 +717,7 @@ class Application(Gtk.Application):
                     flow_graph.grc_file_path = page.file_path
                     page.saved = True
                 except IOError:
-                    Messages.send_fail_save(page.file_path)
+                    logger.error(">>> Error: Cannot save: %s", page.file_path)
                     page.saved = False
                 self.config.add_recent_file(file_path)
                 main.tool_bar.refresh_submenus()
@@ -749,9 +743,9 @@ class Application(Gtk.Application):
                     ).run()
                     if dup_file_path_user is not None:
                         self.platform.save_flow_graph(dup_file_path_user, flow_graph)
-                        Messages.send('Saved Copy to: "' + dup_file_path_user + '"\n')
+                        logger.info("Saved Copy to: %s", dup_file_path_user)
             except IOError:
-                Messages.send_fail_save("Can not create a copy of the flowgraph\n")
+                logger.error(">>> Error: Cannot save: %s", "Can not create a copy of the flowgraph\n")
         elif action == Actions.FLOW_GRAPH_DUPLICATE:
             previous = flow_graph
             # Create a new page
@@ -771,7 +765,7 @@ class Application(Gtk.Application):
                 try:
                     Utils.make_screenshot(flow_graph, file_path, background_transparent)
                 except ValueError:
-                    Messages.send("Failed to generate screen shot\n")
+                    logger.exception("Failed to generate screen shot")
         ##################################################
         # Gen/Exec/Stop
         ##################################################
@@ -783,11 +777,11 @@ class Application(Gtk.Application):
                 if page.saved and page.file_path:
                     generator = page.get_generator()
                     try:
-                        Messages.send_start_gen(generator.file_path)
+                        logger.info("Generating: %s", generator.file_path)
                         generator.write()
                         self.generator = generator
                     except Exception as e:
-                        Messages.send_fail_gen(e)
+                        logger.exception(e)
 
         elif action == Actions.FLOW_GRAPH_EXEC:
             if not page.process:

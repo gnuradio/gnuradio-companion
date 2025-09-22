@@ -54,8 +54,7 @@ from .oot_browser import OOTBrowser
 from .dialogs import ErrorsDialog
 from ...core.base import Element
 
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 # Shortcuts
 Action = QtWidgets.QAction
@@ -1499,7 +1498,7 @@ class MainWindow(QtWidgets.QMainWindow, base.Component):
             self.currentFlowgraphScene.update()
 
     def example_browser_triggered(self, key_filter: Union[str, None] = None):
-        log.debug("example-browser")
+        logger.debug("example-browser")
         if self.examples_found:
             self.ExampleBrowser.reset()
             ex_dialog = ExampleBrowserDialog(self.ExampleBrowser)

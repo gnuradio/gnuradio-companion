@@ -14,8 +14,7 @@ from ...core.base import Element
 from .canvas.flowgraph import FlowgraphScene
 from .canvas import colors
 
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 
 class VariableEditorAction(Enum):

@@ -8,6 +8,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 import ast
 import functools
+import logging
 import random
 from shutil import which as find_executable
 from itertools import count
@@ -19,8 +20,11 @@ from .drawable import Drawable
 from .connection import DummyConnection
 from .. import Actions, Constants, Utils, Bars, Dialogs, MainWindow
 from ..external_editor import ExternalEditor
-from ...core import Messages
 from ...core.FlowGraph import FlowGraph as CoreFlowgraph
+
+
+logger = logging.getLogger(__name__)
+
 
 
 class _ContextMenu(object):
@@ -127,9 +131,7 @@ class FlowGraph(CoreFlowgraph, Drawable):
             editor.open_editor()
         except Exception as e:
             # Problem launching the editor. Need to select a new editor.
-            Messages.send(
-                ">>> Error opening an external editor. Please select a different editor.\n"
-            )
+            logger.warning(">>> Error opening an external editor. Please select a different editor.")
             # Reset the editor to force the user to select a new one.
             self.parent_platform.config.editor = ""
             self.remove_external_editor(target=target)
@@ -192,7 +194,7 @@ class FlowGraph(CoreFlowgraph, Drawable):
                 self.connect(self._old_selected_port, self._new_selected_port)
                 Actions.ELEMENT_CREATE()
             except Exception as e:
-                Messages.send_fail_connection(e)
+                logger.exception(e)
             self._old_selected_port = None
             self._new_selected_port = None
             return True

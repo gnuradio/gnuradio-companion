@@ -20,8 +20,7 @@ from .canvas.colors import (
 
 from ...core.generator import Generator
 
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_X = 400
 DEFAULT_MAX_Y = 300

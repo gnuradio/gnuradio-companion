@@ -1,4 +1,5 @@
 import codecs
+import logging
 import yaml
 import operator
 import os
@@ -7,7 +8,7 @@ import re
 
 from mako.template import Template
 
-from .. import Messages, blocks
+from .. import blocks
 from ..Constants import TOP_BLOCK_FILE_MODE
 from .FlowGraphProxy import FlowGraphProxy
 from ..utils import expr_utils
@@ -23,6 +24,7 @@ header_template = Template(filename=HEADER_TEMPLATE)
 source_template = Template(filename=SOURCE_TEMPLATE)
 cmake_template = Template(filename=CMAKE_TEMPLATE)
 
+logger = logging.getLogger(__name__)
 
 class CppTopBlockGenerator(object):
     def __init__(self, flow_graph, output_dir):
@@ -51,7 +53,7 @@ class CppTopBlockGenerator(object):
             b for b in self._flow_graph.get_enabled_blocks() if b.flags.throttle
         ]
         if not throttling_blocks and not self._generate_options.startswith("hb"):
-            Messages.send_warning(
+            logger.warning(
                 "This flow graph may not have flow control: "
                 "no audio or RF hardware blocks found. "
                 "Add a Misc->Throttle block to your flow "
@@ -60,7 +62,7 @@ class CppTopBlockGenerator(object):
         if len(throttling_blocks) > 1:
             keys = set([b.key for b in throttling_blocks])
             if len(keys) > 1 and "blocks_throttle" in keys:
-                Messages.send_warning(
+                logger.warning(
                     "This flow graph contains a throttle "
                     "block and another rate limiting block, "
                     "e.g. a hardware source or sink. "
@@ -72,7 +74,7 @@ class CppTopBlockGenerator(object):
             b.name for b in self._flow_graph.get_enabled_blocks() if b.flags.deprecated
         }
         for key in deprecated_block_keys:
-            Messages.send_warning("The block {!r} is deprecated.".format(key))
+            logger.warning("The block {!r} is deprecated.".format(key))
 
     def write(self):
         """create directory, generate output and write it to files"""

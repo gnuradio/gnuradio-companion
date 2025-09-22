@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
 
-
+import logging
 import sys
 import textwrap
 from shutil import which as find_executable
@@ -12,7 +12,8 @@ from shutil import which as find_executable
 from gi.repository import Gtk, GLib, Gdk, Gio
 
 from . import Utils, Actions, Constants
-from ..core import Messages
+
+logger = logging.getLogger(__name__)
 
 
 class SimpleTextDisplay(Gtk.TextView):
@@ -291,7 +292,7 @@ def show_about(parent, config):
     try:
         ad.set_logo(Gtk.IconTheme().load_icon("gnuradio-grc", 64, 0))
     except GLib.Error:
-        Messages.send("Failed to set window logo\n")
+        logger.error("Failed to set window logo")
 
     # ad.set_comments("")
     ad.set_copyright(config.license.splitlines()[0])

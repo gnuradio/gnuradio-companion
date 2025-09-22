@@ -14,7 +14,6 @@ import shlex
 from operator import methodcaller, attrgetter
 from typing import List, Set, Optional, Iterator, Iterable, Tuple, Union, OrderedDict
 
-from . import Messages
 from .base import Element
 from .blocks import Block
 from .params import Param
@@ -118,7 +117,7 @@ class FlowGraph(Element):
             d["def"] = "def snipfcn_{}(self):".format(snip.name)
             d["call"] = "snipfcn_{}(tb)".format(snip.name)
             if not len(d["lines"]):
-                Messages.send_warning("Ignoring empty snippet from canvas")
+                logger.warning("Ignoring empty snippet from canvas")
             else:
                 if not section or sect == section:
                     output.append(d)
@@ -546,7 +545,7 @@ class FlowGraph(Element):
                 snk_port_id = connection_info.get("snk_port_id")
                 conn_params = connection_info.get("params", {})
             else:
-                Messages.send_error_load("Invalid connection format detected!")
+                logger.error("Invalid connection format detected!")
                 had_connect_errors = True
                 continue
             try:
@@ -566,7 +565,7 @@ class FlowGraph(Element):
                 self.connect(source_port, sink_port, conn_params)
 
             except (KeyError, LookupError) as e:
-                Messages.send_error_load(
+                logger.error(
                     f"""Connection between {src_blk_id}({src_port_id}) and {snk_blk_id}({snk_port_id}) could not be made
                     \t{e}"""
                 )

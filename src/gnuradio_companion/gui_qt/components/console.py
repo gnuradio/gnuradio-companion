@@ -36,8 +36,7 @@ Toolbar = QtWidgets.QToolBar
 Icons = QtGui.QIcon.fromTheme
 Keys = QtGui.QKeySequence
 
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 
 HTML = """

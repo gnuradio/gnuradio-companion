@@ -7,8 +7,6 @@
 #
 
 import argparse
-import gettext
-import locale
 import logging
 import os
 import platform
@@ -35,56 +33,6 @@ LOG_LEVELS = {
     "critical": logging.CRITICAL,
 }
 
-# Load GNU Radio
-# Do this globally so it is available for both run_gtk() and run_qt()
-try:
-    from gnuradio import gr
-except ImportError as ex:
-
-    class Dummy:
-        def version(self):
-            return "0.0.0"
-
-        def major_version(self):
-            return "0"
-
-        def api_version(self):
-            return "0"
-
-        def minor_version(self):
-            return "0"
-
-        def prefs(self):
-            return {}
-
-        def prefix(self):
-            return "."
-
-    gr = Dummy()
-
-    # Throw a new exception with more information
-    print(
-        "Cannot find GNU Radio! (Have you sourced the environment file?)",
-        file=sys.stderr,
-    )
-
-    # If this is a background session (not launched through a script), show a Tkinter error dialog.
-    # Tkinter should already be installed default with Python, so this shouldn't add new dependencies
-    if not sys.stdin.isatty():
-        import tkinter
-        from tkinter import messagebox
-
-        # Hide the main window
-        root = tkinter.Tk()
-        root.withdraw()
-        # Show the error dialog
-        # TODO: Have a more helpful dialog here. Maybe a link to the wiki pages?
-        messagebox.showerror("Cannot find GNU Radio", "Cannot find GNU Radio!")
-
-    # Throw the new exception
-    # raise Exception("Cannot find GNU Radio!") from None
-
-
 
 def run_gtk(args):
     """Runs the GTK version of GNU Radio Companion"""
@@ -99,18 +47,9 @@ def run_gtk(args):
     from .gui.Platform import Platform
     from .gui.Application import Application
 
-    # The platform is loaded differently between QT and GTK, so this is required both places
-    logger.debug("Loading platform")
-    platform = Platform(
-        version=gr.version(),
-        version_parts=(gr.major_version(), gr.api_version(), gr.minor_version()),
-        prefs=gr.prefs(),
-        install_prefix=gr.prefix(),
-    )
-    platform.build_library()
-
+    runtime = Platform()
     logger.debug("Loading application")
-    app = Application(args.flow_graphs, platform)
+    app = Application(args.flow_graphs, runtime)
     logger.debug("Running")
     sys.exit(app.run())
 
@@ -291,7 +230,8 @@ def main(args=None):
 
     py_version = sys.version.split()[0]
 
-    logger.notice("<<< Welcome to the GNU Radio Companion (%s) >>>", gr.version())
+    logger.notice("<<< Welcome to the GNU Radio Companion (%s) >>>", "3.12-alpha")
+    "<<< Welcome to {config.name} {config.version} >>>\n\nBlock paths:\n\t{paths}\n"
     logger.debug("Using Python {}".format(py_version))
 
     grc_version_from_config = ""
@@ -314,7 +254,6 @@ def main(args=None):
     # Custom Configurations
     # TODO: parser.add_argument('--config')
 
-    # Logging support
     parser.add_argument(
         "--log",
         choices=["debug", "info", "warning", "error", "critical"],
@@ -342,10 +281,6 @@ def main(args=None):
 
     # Default options if not already set with add_argument()
     args = args or parser.parse_args()
-
-    # Print the startup message
-    py_version = sys.version.split()[0]
-
 
     # File logging
     log_file = os.path.join(get_state_directory(), "grc.log")

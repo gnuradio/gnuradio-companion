@@ -21,7 +21,7 @@ from grc.gui_qt.grc import Application
 from grc.gui_qt.components.window import MainWindow
 from grc.gui_qt.Platform import Platform
 
-logger = logging.getLogger("grc")
+logger = logging.getLogger("gnuradio_companion")
 
 
 @pytest.fixture(scope="session")

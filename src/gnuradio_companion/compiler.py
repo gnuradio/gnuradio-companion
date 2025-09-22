@@ -35,7 +35,6 @@ except ImportError as ex:
 
     gr = Dummy()
 
-from .core import Messages
 from .core.platform import Platform
 
 from .utilities import logger as custom_logging
@@ -103,7 +102,7 @@ def main(args=None):
     flow_graph = file_path = None
     for grc_file in args.grc_files:
         os.path.exists(grc_file) or exit("Error: missing " + grc_file)
-        Messages.send("\n")
+
         platform.config.hier_block_lib_dir = output_dir
         flow_graph, file_path = platform.load_and_generate_flow_graph(
             os.path.abspath(grc_file), os.path.abspath(output_dir)

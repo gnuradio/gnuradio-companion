@@ -37,8 +37,7 @@ from qtpy.QtGui import QStandardItem, QStandardItemModel
 from .. import base
 from .canvas.block import Block
 
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 
 class BlockSearchBar(QLineEdit):

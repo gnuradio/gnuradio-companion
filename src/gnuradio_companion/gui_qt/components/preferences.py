@@ -23,8 +23,7 @@ from qtpy.QtWidgets import (
 from ..properties import Paths
 from gnuradio import gr
 
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 
 class PreferencesDialog(QDialog):

@@ -25,9 +25,7 @@ import weakref
 # Third-party  modules
 from qtpy import QtWidgets
 
-
-# Logging
-log = logging.getLogger(f"grc.application.{__name__}")
+logger = logging.getLogger(__name__)
 
 
 class Component(object):

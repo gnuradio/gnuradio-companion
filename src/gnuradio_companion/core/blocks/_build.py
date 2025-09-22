@@ -6,16 +6,19 @@
 
 
 import itertools
+import logging
 import re
 from typing import Type
 
 from ..Constants import ADVANCED_PARAM_TAB
 from ..utils import to_list
-from ..Messages import send_warning
 
 from .block import Block
 from ._flags import Flags
 from ._templates import MakoTemplates
+
+
+logger = logging.getLogger(__name__)
 
 
 def build(
@@ -194,7 +197,7 @@ def _single_mako_expr(value, block_id):
 
 def _validate_option_attributes(param_data, block_id):
     if param_data["dtype"] != "enum":
-        send_warning(
+        logger.warning(
             "{} - option_attributes are for enums only, ignoring".format(block_id)
         )
         del param_data["option_attributes"]
@@ -202,7 +205,7 @@ def _validate_option_attributes(param_data, block_id):
         for key in list(param_data["option_attributes"].keys()):
             if key in dir(str):
                 del param_data["option_attributes"][key]
-                send_warning(
+                logger.warning(
                     '{} - option_attribute "{}" overrides str, ignoring'.format(
                         block_id, key
                     )

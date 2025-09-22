@@ -28,9 +28,9 @@ from qtpy import QtCore, QtWidgets, QtGui, PYQT_VERSION, PYSIDE_VERSION
 from . import components
 from .helpers.profiling import StopWatch
 
-# Logging
+
 # Setup the logger to use a different name than the file name
-log = logging.getLogger("grc.application")
+logger = logging.getLogger(__name__)
 
 
 class Application(QtWidgets.QApplication):

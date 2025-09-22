@@ -1,4 +1,5 @@
 import codecs
+import logging
 import operator
 import os
 import tempfile
@@ -6,7 +7,7 @@ import textwrap
 
 from mako.template import Template
 
-from .. import Messages, blocks
+from .. import blocks
 from ..Constants import TOP_BLOCK_FILE_MODE
 from .FlowGraphProxy import FlowGraphProxy
 from ..utils import expr_utils
@@ -16,6 +17,8 @@ DATA_DIR = os.path.dirname(__file__)
 PYTHON_TEMPLATE = os.path.join(DATA_DIR, "flow_graph.py.mako")
 
 python_template = Template(filename=PYTHON_TEMPLATE)
+
+logger = logging.getLogger(__name__)
 
 
 class TopBlockGenerator(object):
@@ -45,7 +48,7 @@ class TopBlockGenerator(object):
             b for b in self._flow_graph.get_enabled_blocks() if b.flags.throttle
         ]
         if not throttling_blocks and not self._generate_options.startswith("hb"):
-            Messages.send_warning(
+            logger.warning(
                 "This flow graph may not have flow control: "
                 "no audio or RF hardware blocks found. "
                 "Add a Misc->Throttle block to your flow "
@@ -54,7 +57,7 @@ class TopBlockGenerator(object):
         if len(throttling_blocks) > 1:
             keys = set([b.key for b in throttling_blocks])
             if len(keys) > 1 and "blocks_throttle" in keys:
-                Messages.send_warning(
+                logger.warning(
                     "This flow graph contains a throttle "
                     "block and another rate limiting block, "
                     "e.g. a hardware source or sink. "
@@ -66,7 +69,7 @@ class TopBlockGenerator(object):
             b.name for b in self._flow_graph.get_enabled_blocks() if b.flags.deprecated
         }
         for key in deprecated_block_keys:
-            Messages.send_warning("The block {!r} is deprecated.".format(key))
+            logger.warning("The block {!r} is deprecated.".format(key))
 
     def write(self):
         """generate output and write it to files"""
