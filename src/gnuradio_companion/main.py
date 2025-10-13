@@ -131,12 +131,7 @@ def run_qt(args):
     logger.debug("Loading platform")
     # TODO: Might be beneficial to rename Platform to avoid confusion with the builtin Python module
     # Possible names: internal, model?
-    model = Platform(
-        version=gr.version(),
-        version_parts=(gr.major_version(), gr.api_version(), gr.minor_version()),
-        prefs=gr.prefs(),
-        install_prefix=gr.prefix(),
-    )
+    model = Platform()
     model.build_library()
 
     # Launch GRC
@@ -225,8 +220,8 @@ def get_state_directory() -> str:
 
 
 def main(args=None):
-    # TODO: Only for testing!
-    custom_logging.configure_logger(logging.TRACE)
+    # NOTE: Only for testing!
+    # custom_logging.configure_logger(logging.TRACE)
 
     py_version = sys.version.split()[0]
 

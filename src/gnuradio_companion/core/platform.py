@@ -63,8 +63,8 @@ class Platform():
             logger.debug("Limited functionality is available since no runtime was detected.")
             self._runtime = None
 
-            version=3
-            version_parts=(3, 11, 0)
+            version=0
+            version_parts=(0, 0, 0)
             prefs=None
             install_prefix=""
 
