@@ -1,0 +1,36 @@
+# Simple Wireframing box pulled from Barry's gr-draw module
+
+id: simple_box
+label: Block
+
+parameters:
+-   id: block_name
+    label: Type
+    dtype: string
+    default: "Block"
+-   id: number_inputs
+    label: Number of Inputs
+    dtype: int
+    default: 1
+    hide: part
+-   id: number_outputs
+    label: Number of Outputs
+    dtype: int
+    default: 1
+    hide: part
+
+inputs:
+-   domain: message
+    id: input
+    multiplicity: ${ number_inputs }
+    optional: true
+    hide: ${ number_inputs < 1 }
+
+outputs:
+-   domain: message
+    id: output
+    multiplicity: ${ number_outputs }
+    optional: true
+    hide: ${ number_outputs < 1 }
+
+file_format: 1

@@ -21,7 +21,7 @@ from grc.gui_qt.grc import Application
 from grc.gui_qt.components.window import MainWindow
 from grc.gui_qt.Platform import Platform
 
-log = logging.getLogger("grc")
+logger = logging.getLogger("gnuradio_companion")
 
 
 @pytest.fixture(scope="session")
@@ -35,17 +35,17 @@ def qapp_cls_():
     if lc:
         languages = [lc]
     languages += settings.DEFAULT_LANGUAGE
-    log.debug("Using locale - %s" % str(languages))
+    logger.debug("Using locale - %s" % str(languages))
 
     # Still run even if the english translation isn't found
     language = gettext.translation(
         settings.APP_NAME, settings.path.LANGUAGE, languages=languages, fallback=True
     )
     if type(language) == gettext.NullTranslations:
-        log.error("Unable to find any translation")
-        log.error("Default English translation missing")
+        logger.error("Unable to find any translation")
+        logger.error("Default English translation missing")
     else:
-        log.info("Using translation - %s" % language.info()["language"])
+        logger.info("Using translation - %s" % language.info()["language"])
     # Still need to install null translation to let the system handle calls to _()
     language.install()
 

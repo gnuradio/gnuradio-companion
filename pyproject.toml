@@ -1,0 +1,48 @@
+[project]
+name = "gnuradio-companion"
+version = "0.1.0"
+description = "GNU Radio Companion"
+authors = []
+dependencies = [
+    "numpy>=2.3.3",
+    "mako>=1.3.10",
+    "PyYaml>=6.0.3",
+    "jsonschema>=4.25.1",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "GPL3"}
+
+[dependency-groups]
+gtk = [
+    "PyGObject>=3.54.3",
+]
+qt = [
+    "PyQt5>=5.15.11",
+]
+dev = [
+    "ruff>=0.13.0",
+    "pytest>=8.4.2",
+    "vermin>=1.6.0",
+]
+optional = [
+    "rich>=14.1.0",
+    "networkx",
+    "pydantic",
+    "sympy",
+]
+
+[project.scripts]
+gnuradio-companion = "gnuradio_companion.main:main"
+gnuradio-compiler = "gnuradio_companion.compiler:main"
+
+# Shortcut entrypoints
+grc = "gnuradio_companion.main:main"
+grcc = "gnuradio_companion.compiler:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.pdm]
+distribution = true
